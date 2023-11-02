@@ -1,5 +1,8 @@
 const WEATHER_API_KEY="8d7ce158af399b5e504438876a01a4f4"
 
+var cityPane = $("#cityListPane");
+var weatherPane = $("#weatherPane");
+
 function getCityList() {
 
     var userInput = $("#city").val()
@@ -19,20 +22,33 @@ function getCityList() {
 }
 
 function displayCityList(cityChoices) {
+    console.log(cityChoices)
 
-    $("weatherPane").hide();
-    $("cityListPane").show();
+    weatherPane.hide();
+    cityPane.empty();
+    cityPane.show();
+
+    if (cityChoices.length === 1) {
+        displayWeather(cityChoices.lat, cityChoices.lon, cityChoices.name)
+    } else {
+        cityChoices.forEach((city) => {
+            cityPane.append(`<button class="cityButton" data-lat=${cityChoice.lat} data-lon=${cityChoice.lon} data-name=${cityChoice.name}>${city.name}, ${city.state}</button>`)
+            
+        })
+    }
 
 }
 
+function displayWeather(cityLat, cityLong, cityName) {
+    $("#cityListPane").hide();
+    $("#weatherPane").show()
+}
 
 $(function() {
     var cityBtnEl = $("#citySubmit")
 
     cityBtnEl.on("click", function(eventData){
         eventData.preventDefault()
-        //console.log($("#city"))
-        console.log("foo")
         getCityList();
     })
 });

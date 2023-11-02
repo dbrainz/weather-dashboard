@@ -10,13 +10,29 @@
     </head>
 </html>
 <body>
+    <div id="mainWrapper" class="row">
+        <div id="sidebar" class="col-lg-3">
+            <form>
+                <label for="city">City </label>
+                <input type="text" id="city">
+                <button id="citySubmit" type="submit">Search</button>
+            </form>
+            <div>
 
-    <form>
-        <label for="city">City </label>
-        <input type="text" id="city">
-        <button id="citySubmit" type="submit">Search</button>
-    </form>
+            </div>
+        </div>
+        <div id="mainWindow" class="col-lg-8">
+            <div id="cityListPane">
+            test1
+            </div>
+            <div id="weatherPane">
 
+            </div>
+        </div>
+        <div id="rightBuffer" class="d-none d-xl-block col-1">
+            test2
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
