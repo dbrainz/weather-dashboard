@@ -32,16 +32,48 @@ function displayCityList(cityChoices) {
         displayWeather(cityChoices.lat, cityChoices.lon, cityChoices.name)
     } else {
         cityChoices.forEach((city) => {
-            cityPane.append(`<button class="cityButton" data-lat=${cityChoice.lat} data-lon=${cityChoice.lon} data-name=${cityChoice.name}>${city.name}, ${city.state}</button>`)
+            cityPane.append(`<button class="cityButton" data-lat=${city.lat} data-lon=${city.lon} data-name=${city.name}>${city.name}, ${city.state}</button>`)
             
+        })
+        $(".cityButton").on("click", function(eventData){
+            eventData.preventDefault()
+            displayWeather($(this).data("lat"), $(this).data("lon"), $(this).data("name"));
+   
         })
     }
 
 }
 
-function displayWeather(cityLat, cityLong, cityName) {
+function displayWeather(cityLat, cityLon, cityName) {
     $("#cityListPane").hide();
     $("#weatherPane").show()
+    let currentQuery = `https://api.openweathermap.org/data/2.5/weather?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=${WEATHER_API_KEY}`
+    fetch(currentQuery)
+        .then(currentResponse => currentResponse.json())
+        .then(todaysData => {
+            $("#icon0").attr("src", "https://openweathermap.org/img/wn/" + todaysData.weather[0].icon + ".png")
+            $("#icon0").attr("alt", todaysData.weather[0].main)
+            $("#temp0").text(Math.round(todaysData.main.temp))
+            $("#humidity0").text(todaysData.main.humidity + "%")
+            $("#wind0").text(Math.round(todaysData.wind.speed)+ " mph")
+        })
+    let weatherQuery = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${cityLat}&lon=${cityLon}&cnt=6&units=imperial&appid=${WEATHER_API_KEY}`
+    fetch(weatherQuery)
+        .then( weatherResponse => weatherResponse.json())
+        .then(weatherData => {
+            console.log(weatherData)
+            $("#cityName").text(weatherData.city.name + "   (" + dayjs(weatherData.list[0].dt*1000).format("MM/DD/YYYY") + ")")
+            for (i=1; i<6; i++){
+                $("#date" + i).text(dayjs(weatherData.list[i].dt*1000).format("MM/DD/YYYY"))
+                $("#icon" + i).attr("src", "https://openweathermap.org/img/wn/" + weatherData.list[i].weather[0].icon + ".png")
+                $("#icon" + i).attr("alt", weatherData.list[i].weather[0].main)
+                $("#temp" + i).text(Math.round(weatherData.list[i].temp.max) + " / " + Math.round(weatherData.list[i].temp.min))
+                $("#humidity" + i).text(weatherData.list[i].humidity + "%")
+                $("#wind" + i).text(Math.round(weatherData.list[i].speed)+ " mph")
+            }
+
+
+        })
 }
 
 $(function() {

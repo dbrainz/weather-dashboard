@@ -1,0 +1,18 @@
+#cityListPane, #weatherPane {
+    display: none;
+}
+
+#todaysWeather {
+    background-color: blue;
+    color: white;
+    border: 5px solid;
+    margin-bottom : 30px;
+    padding: 10px;
+}
+
+.dailyBlock {
+    background-color: blue;
+    color: white;
+    border-left: 10x solid white;
+    border-right: 10px solid white;
+}
