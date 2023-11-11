@@ -3,10 +3,12 @@ const WEATHER_API_KEY="8d7ce158af399b5e504438876a01a4f4"
 var cityPane = $("#cityListPane");
 var weatherPane = $("#weatherPane");
 
+var searchHistory = [];
+
 function getCityList() {
 
     var userInput = $("#city").val()
-    console.log(userInput)
+    if (userInput.length===0) return
     var locationQuery = `http://api.openweathermap.org/geo/1.0/direct?q=${userInput.replace(" ", "_")}&limit=5&appid=${WEATHER_API_KEY}`
     //locationQuery = "http://api.openweathermap.org/geo/1.0/direct?q=Los_Angeles&limit=5&appid=" + WEATHER_API_KEY
     console.log(locationQuery)
@@ -47,6 +49,7 @@ function displayCityList(cityChoices) {
 function displayWeather(cityLat, cityLon, cityName) {
     $("#cityListPane").hide();
     $("#weatherPane").show()
+    addToHistory(cityLat, cityLon, cityName);
     let currentQuery = `https://api.openweathermap.org/data/2.5/weather?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=${WEATHER_API_KEY}`
     fetch(currentQuery)
         .then(currentResponse => currentResponse.json())
@@ -74,6 +77,30 @@ function displayWeather(cityLat, cityLon, cityName) {
 
 
         })
+}
+
+function addToHistory(saveLat, saveLon, saveName) {
+    newSearch = {
+        lat : saveLat,
+        lon : saveLon,
+        name : saveName
+    }
+    searchHistory.unshift(newSearch)
+    searchHistory = searchHistory.filter( (city, i) => {
+        if (i===0) {
+            return true
+        } else { 
+            if (city.lat===saveLat && city.lon===saveLon) {
+                return false
+            }
+        }
+        return true
+    })
+    if (searchHistory.length>10) {
+        searchHistory.splice(10)
+    }
+    localStorage.setItem("weather-dashboard-history", JSON.stringify(searchHistory))
+    
 }
 
 $(function() {
