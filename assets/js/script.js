@@ -106,6 +106,13 @@ function addToHistory(saveLat, saveLon, saveName) {
 $(function() {
     var cityBtnEl = $("#citySubmit")
 
+    let retrieveHistory=localStorage.getItem("weather-dashboard-history")
+    if (retrieveHistory===null) {
+        searchHistory=[]
+    } else {
+        searchHistory = JSON.parse(retrieveHistory)
+    }
+    console.log(searchHistory)
     cityBtnEl.on("click", function(eventData){
         eventData.preventDefault()
         getCityList();
