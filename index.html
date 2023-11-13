@@ -10,15 +10,19 @@
     </head>
 </html>
 <body>
+    <div>
+        <h1 id="pageTitle">Weather Dashboard</h1>
+    </div>"
     <div id="mainWrapper" class="row">
-        <div id="sidebar" class="col-lg-3">
+        <div id="sidebar" class="col-lg-2">
             <form>
-                <label for="city">City </label>
+                <label for="city"><b>Search for a City</b></label>
                 <input type="text" id="city">
                 <button id="citySubmit" type="submit">Search</button>
             </form>
+            <hr>
             <div id="prevSearch">
-
+ 
             </div>
         </div>
         <div id="mainWindow" class="col-lg-8">
@@ -34,6 +38,7 @@
                         Wind: <span id="wind0"></span>
                     </div>
                 </div>
+                <h3>5-Day Forecast</h3>
                 <div class="row row-cols-5">
                     <div class="dailyBlock">
                         <h4 id="date1"></h3>

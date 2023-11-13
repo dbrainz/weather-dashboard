@@ -10,8 +10,7 @@ function getCityList() {
     var userInput = $("#city").val()
     if (userInput.length===0) return
     var locationQuery = `http://api.openweathermap.org/geo/1.0/direct?q=${userInput.replace(" ", "_")}&limit=5&appid=${WEATHER_API_KEY}`
-    //locationQuery = "http://api.openweathermap.org/geo/1.0/direct?q=Los_Angeles&limit=5&appid=" + WEATHER_API_KEY
-    console.log(locationQuery)
+
     fetch(locationQuery) 
         .then(function(cityResponse) {
             return cityResponse.json()
@@ -19,8 +18,6 @@ function getCityList() {
         .then(function(cityData){
             displayCityList(cityData)        
         })
-    
-
 }
 
 function displayCityList(cityChoices) {
@@ -31,7 +28,7 @@ function displayCityList(cityChoices) {
     cityPane.show();
 
     if (cityChoices.length === 1) {
-        displayWeather(cityChoices.lat, cityChoices.lon, cityChoices.name)
+        displayWeather(cityChoices[0].lat, cityChoices[0].lon, cityChoices[0].name)
     } else {
         cityChoices.forEach((city) => {
             cityPane.append(`<button class="cityButton" data-lat=${city.lat} data-lon=${city.lon} data-name=${city.name}>${city.name}, ${city.state}</button>`)
@@ -49,6 +46,7 @@ function displayCityList(cityChoices) {
 function displayWeather(cityLat, cityLon, cityName) {
     $("#cityListPane").hide();
     $("#weatherPane").show()
+    $("#city").val("")
     addToHistory(cityLat, cityLon, cityName);
     let currentQuery = `https://api.openweathermap.org/data/2.5/weather?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=${WEATHER_API_KEY}`
     fetch(currentQuery)
@@ -64,7 +62,6 @@ function displayWeather(cityLat, cityLon, cityName) {
     fetch(weatherQuery)
         .then( weatherResponse => weatherResponse.json())
         .then(weatherData => {
-            console.log(weatherData)
             $("#cityName").text(weatherData.city.name + "   (" + dayjs(weatherData.list[0].dt*1000).format("MM/DD/YYYY") + ")")
             for (i=1; i<6; i++){
                 $("#date" + i).text(dayjs(weatherData.list[i].dt*1000).format("MM/DD/YYYY"))
@@ -80,6 +77,7 @@ function displayWeather(cityLat, cityLon, cityName) {
 }
 
 function addToHistory(saveLat, saveLon, saveName) {
+    if (saveLat==undefined || saveLon==undefined || saveName==undefined) return
     newSearch = {
         lat : saveLat,
         lon : saveLon,
@@ -100,9 +98,28 @@ function addToHistory(saveLat, saveLon, saveName) {
         searchHistory.splice(10)
     }
     localStorage.setItem("weather-dashboard-history", JSON.stringify(searchHistory))
+    displayHistory()
     
 }
 
+function displayHistory() {
+    searchListEl = $("#prevSearch")
+    searchListEl.empty();
+    if (searchHistory.length === 0) {
+        return
+    } else {
+        searchHistory.forEach((city) => {
+            searchListEl.append(`<button class="historyBtn" data-lat=${city.lat} data-lon=${city.lon} data-name=${city.name}>${city.name}</button>`)
+            
+        })
+        $(".historyBtn").on("click", function(eventData){
+            eventData.preventDefault()
+            displayWeather($(this).data("lat"), $(this).data("lon"), $(this).data("name"));
+   
+        })
+    }
+
+}
 $(function() {
     var cityBtnEl = $("#citySubmit")
 
@@ -112,7 +129,8 @@ $(function() {
     } else {
         searchHistory = JSON.parse(retrieveHistory)
     }
-    console.log(searchHistory)
+    displayHistory();
+
     cityBtnEl.on("click", function(eventData){
         eventData.preventDefault()
         getCityList();
