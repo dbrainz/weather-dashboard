@@ -1,10 +1,15 @@
+// openweather api key
 const WEATHER_API_KEY="8d7ce158af399b5e504438876a01a4f4"
 
 var cityPane = $("#cityListPane");
 var weatherPane = $("#weatherPane");
 
+// city search history - ten most recent searches saved to local storage
 var searchHistory = [];
 
+// takes user input from the page when the search button is clicked and uses it to look up matching cities from the openweather geolocation api
+// if user doesn't inout anything, exit without doing anything
+// 
 function getCityList() {
 
     var userInput = $("#city").val()
@@ -20,6 +25,8 @@ function getCityList() {
         })
 }
 
+// if geolocation api call returned more tha one possible city, this displays those choices as buttons
+// when the user clicks one of the buttons, the forecast for that city is displayed
 function displayCityList(cityChoices) {
     console.log(cityChoices)
 
@@ -43,14 +50,18 @@ function displayCityList(cityChoices) {
 
 }
 
+// display weaather for the selected city
 function displayWeather(cityLat, cityLon, cityName) {
     $("#cityListPane").hide();
     $("#weatherPane").show()
     $("#city").val("")
+    // add city to the search history 
     addToHistory(cityLat, cityLon, cityName);
+    // call openweather current weather api
     let currentQuery = `https://api.openweathermap.org/data/2.5/weather?lat=${cityLat}&lon=${cityLon}&units=imperial&appid=${WEATHER_API_KEY}`
     fetch(currentQuery)
         .then(currentResponse => currentResponse.json())
+        // display current weather
         .then(todaysData => {
             $("#icon0").attr("src", "https://openweathermap.org/img/wn/" + todaysData.weather[0].icon + ".png")
             $("#icon0").attr("alt", todaysData.weather[0].main)
@@ -58,9 +69,11 @@ function displayWeather(cityLat, cityLon, cityName) {
             $("#humidity0").text(todaysData.main.humidity + "%")
             $("#wind0").text(Math.round(todaysData.wind.speed)+ " mph")
         })
+    // call openweather forecast api
     let weatherQuery = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=${cityLat}&lon=${cityLon}&cnt=6&units=imperial&appid=${WEATHER_API_KEY}`
     fetch(weatherQuery)
         .then( weatherResponse => weatherResponse.json())
+        // display forecast for the next 5 days
         .then(weatherData => {
             $("#cityName").text(weatherData.city.name + "   (" + dayjs(weatherData.list[0].dt*1000).format("MM/DD/YYYY") + ")")
             for (i=1; i<6; i++){
@@ -76,6 +89,8 @@ function displayWeather(cityLat, cityLon, cityName) {
         })
 }
 
+// add city to the search history
+// if it currently exists in the history list, move it to the top
 function addToHistory(saveLat, saveLon, saveName) {
     if (saveLat==undefined || saveLon==undefined || saveName==undefined) return
     newSearch = {
@@ -102,6 +117,9 @@ function addToHistory(saveLat, saveLon, saveName) {
     
 }
 
+
+// display search history as a button list
+// show weather for that city if user clicks one of the history buttons
 function displayHistory() {
     searchListEl = $("#prevSearch")
     searchListEl.empty();
@@ -120,9 +138,11 @@ function displayHistory() {
     }
 
 }
+
+// main function
 $(function() {
     var cityBtnEl = $("#citySubmit")
-
+    // load search history from local storage
     let retrieveHistory=localStorage.getItem("weather-dashboard-history")
     if (retrieveHistory===null) {
         searchHistory=[]
