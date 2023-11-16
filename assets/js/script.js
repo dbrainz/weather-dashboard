@@ -9,7 +9,7 @@ function getCityList() {
 
     var userInput = $("#city").val()
     if (userInput.length===0) return
-    var locationQuery = `http://api.openweathermap.org/geo/1.0/direct?q=${userInput.replace(" ", "_")}&limit=5&appid=${WEATHER_API_KEY}`
+    var locationQuery = `https://api.openweathermap.org/geo/1.0/direct?q=${userInput.replace(" ", "_")}&limit=5&appid=${WEATHER_API_KEY}`
 
     fetch(locationQuery) 
         .then(function(cityResponse) {
